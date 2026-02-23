@@ -129,10 +129,77 @@ O painel foi conceitualizado não como um site genérico, mas como um **Manageme
 
 ---
 
-## 6. Arquitetura de Banco de Dados e Storage (Resumo Técnico)
+## 6. Especificações de Banco de Dados (Supabase Postgres)
 
-*   O sistema roda sobre PostgreSQL (Supabase) gerindo as tabelas de `clientes`, `processos`, `documentos_ia` e os `logs_inss`.
-*   As regras do Kanban rodam como *Triggers/Workers*, avaliando diariamente se um processo "caminhou para frente".
-*   Os buckets são RLS (Storage Blindado) isolando a base suja (O que o advogado enviou) da base limpa (A Auditada).
+A modelagem de dados foi desenhada para suportar a esteira interligada ao Kanban de forma assíncrona. O esquema utilizará chaves estrangeiras (fks) robustas e UUIDs.
 
-*(O desenvolvimento deve guiar-se pelos DataGrids financeiros repassados no Figma original).*
+### 6.1. Entidades Principais (Tabelas)
+
+1.  **`clientes` (Tabela Mestre de Cadastro)**
+    *   **Colunas:** `id` (uuid, PK), `nome_completo`, `cpf` (unique), `data_nascimento`, `telefone`, `email`, `endereco_json`.
+    *   **Relacionamento:** 1 para N com `processos`.
+
+2.  **`processos` (A "Pasta" que caminha no Kanban)**
+    *   **Colunas:** `id` (uuid, PK), `cliente_id` (fk -> clientes), `tipo_beneficio` (Enum: BPC_DEFICIENTE, AUXILIO_DOENCA, etc.), `fase_kanban` (Enum: NOVO_PROCESSO, DOCUMENTACAO, PRONTO_PETICAO, EXIGENCIA, etc.), `der` (data entrada requerimento), `numero_beneficio` (varchar).
+    *   **Relacionamento:** 1 para N com `documentos` e `historico_inss`.
+
+3.  **`documentos` (Trilha de Auditoria e IA)**
+    *   **Colunas:** `id` (uuid, PK), `processo_id` (fk -> processos), `storage_path` (caminho no bucket), `tipo_classificado_ia` (Enum: RG, CNH, LAUDO, COMPROVANTE_RESIDENCIA), `bucket_categoria` (Enum: 01_DADOS_PESSOAIS, 04_MEDICOS_LAUDOS...), `metadados_ia` (jsonb - guarda o CID, data de validade do laudo), `status_qualidade` (Enum: LEGIVEL, ILEGIVEL_TRAVA).
+
+4.  **`pecas_juridicas` (Os Documentos Finais Oficiais)**
+    *   **Colunas:** `id` (uuid, PK), `processo_id` (fk -> processos), `tipo_peca` (Enum: PETICAO_INICIAL, RELATORIO_GESTORA, PACOTE_FINAL_PDF), `storage_path` (caminho do arquivo gerado).
+
+5.  **`historico_inss` (Diário de Bordo do RPA)**
+    *   **Colunas:** `id` (uuid, PK), `processo_id` (fk -> processos), `evento` (Enum: EXIGENCIA, PERICIA_AGENDADA, DEFERIDO, INDEFERIDO), `conteudo_texto` (varchar), `data_evento_portal` (timestamp), `prazo_fatal` (date), `storage_print_path`.
+
+### 6.2. Como essas Tabelas se Completam (A Correlação Simples)
+
+Pense neste banco de dados como um arquivo físico de escritório hiper-organizado alinhado ao seu Kanban:
+
+*   **`clientes` é a Ficha Cadastral da pessoa.** Ela guarda apenas dados permanentes. Se o João tiver 3 problemas diferentes na justiça, a ficha dele (`clientes`) continua sendo uma só.
+*   **`processos` é o Card no Kanban ("Pasta de Papelão").** Nela está anotada qual é o benefício (ex: BPC) e em qual Coluna do Kanban a pasta está parada (`fase_kanban`). A pasta (`processos`) sempre tem o nome do dono grudada nela (`cliente_id`).
+*   **`documentos` são as Folhas Soltas dentro da pasta.** Cada folha (RG, Laudo) forma uma linha nessa tabela. O sistema cruza os `documentos` legíveis com a regra do Benefício do `processo` para saber se o card pode avançar no Kanban.
+*   **`pecas_juridicas` são os Documentos Finais.** Depois que a documentação foi aprovada, o sistema escreve a Petição e o Relatório e anexa aqui.
+*   **`historico_inss` é o Radar Externo.** Depois que a pasta vira "Em Andamento", o Robô de Scraping escreve uma linha aqui toda vez que o governo responde algo (Exigência, Perícia). Se ele escreve "Exigência", uma *Trigger* do banco move o `processo` (Card) automaticamente para a coluna vermelha do Kanban.
+
+**Diagrama de Relacionamento:**
+`clientes` (1) ---> (N) `processos`
+                     |---> (N) `documentos` (Originais + Extratos IA paramétricos)
+                     |---> (1) `pecas_juridicas` (Arquivos Premium - Petição/Relatório)
+                     |---> (N) `historico_inss` (Eventos do Crawler contínuos)
+
+---
+
+## 7. Estrutura de Storage (Buckets do Supabase para Fotos/PDFs)
+
+Teremos **DOIS BUCKETS** principais no Supabase Storage para isolar as fotos cruas de WhatsApp dos Dossiês Jurídicos tratados:
+
+### Bucket 1: `raw-uploads` (A "Lixeira Temporária")
+*   **Propósito:** Receber a "sujeira" (fotos de whatsapp, jpegs cortados) tiradas pelo Advogado no Atendimento Inicial (Card no Kanban: Novo Processo).
+*   **Acesso:** Somente a role `operacional` (INSERT) e as `edge-functions` (SELECT, DELETE). Arquivos morrem aqui após a IA processar.
+
+### Bucket 2: `dossies-validados` (O Arquivo Oficial Organizado)
+*   **Propósito:** Onde o sistema deposita os PDFs já cortados, rotacionados, tratados pela IA e categorizados. É daqui que a Tela de Auditoria da Gestora puxa o PDF para exibir em Split-Screen.
+*   **Hierarquia Interna Rigorosa:**
+    *   `/cliente_uuid/processo_uuid/01_DADOS_PESSOAIS/` (Ex: RG.pdf, CPF.pdf, Comp_Residencia.pdf)
+    *   `/cliente_uuid/processo_uuid/03_RENDA/` (Ex: CadUnico_2025.pdf)
+    *   `/cliente_uuid/processo_uuid/04_MEDICOS_LAUDOS/` (Ex: Laudo_Ortopedista_Com_CID.pdf)
+    *   `/cliente_uuid/processo_uuid/06_INSS/` (Ex: Print_Exigencia_Tela_INSS.pdf)
+    *   `/cliente_uuid/processo_uuid/90_PECAS_GERADAS/` (Petição DOCX Final)
+
+---
+
+## 8. Catálogo de Edge Functions (Os Módulos de Automação / "Robôs")
+
+O "Cérebro" invisível do sistema rodará em Deno Edge Functions no Supabase, orquestrando o Kanban.
+
+1.  **`module-vision-ocr` (Antigo Robô 1):** 
+    *   **Ação:** Disparado logo após o upload no `raw-uploads`. Usa **OpenAI GPT-4o Vision** para classificar qual é aquele documento (É um RG? Um Laudo?), valida a legibilidade (desfocado?), converte a foto .JPG para .PDF e move para o Bucket Oficial `dossies-validados`.
+2.  **`module-clinical-extractor` (Antigo Robô 6):**
+    *   **Ação:** Quando um PDF cai na pasta `04_MEDICOS_LAUDOS`, esta função lê todo o texto médico, busca a string do CID e a DII (Data de Início da Incapacidade) exigida pelo INSS (ex: Auxílio-Doença) e salva isso estruturado na tabela `documentos` no campo `metadados_ia`.
+3.  **`module-checklist-gatekeeper` (Antigo Robô 3/4):**
+    *   **Ação:** Uma função de validação de negócio constante. Ela escuta a tabela de `documentos`. Se o `processo` é BPC LOAS e a função achou na tabela um "CadÚnico < 2 anos" + "RG" + "Laudo com CID", ela permite que o Card mude de "Documentação" para "Documentação Aprovada" no Kanban. Se falta algo, mantém travado.
+4.  **`module-document-assembler` (Antigo Robô 8/9):**
+    *   **Ação:** Acionado na fase "Pronto para Petição". Usa biblioteca Node (`docx`) para preencher um template padrão de Petição injetando os dados do `cliente` e os resumos de laudos encontrados. Aglutina todos os PDFs vitais (RG + Laudo + Petição) em 1 único arquivo Final para a Gestora aprovar com 1 clique (Ação Humana).
+
+*(O Robô 10 de varredura do INSS e Robô 5 de Protocolo rodam fora do modelo serverless do Supabase, como workers de RPA pesados em Node.js/Python).*
