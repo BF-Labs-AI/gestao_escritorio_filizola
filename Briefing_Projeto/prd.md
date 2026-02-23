@@ -170,22 +170,19 @@ Pense neste banco de dados como um arquivo físico de escritório hiper-organiza
 
 ---
 
-## 7. Estrutura de Storage (Buckets do Supabase para Fotos/PDFs)
+## 7. Estrutura de Storage (Bucket Único do Supabase)
 
-Teremos **DOIS BUCKETS** principais no Supabase Storage para isolar as fotos cruas de WhatsApp dos Dossiês Jurídicos tratados:
+O sistema operará com **APENAS UM BUCKET** principal (ex: `documentos_processuais`) para acomodar todo o ciclo de vida dos arquivos. 
 
-### Bucket 1: `raw-uploads` (A "Lixeira Temporária")
-*   **Propósito:** Receber a "sujeira" (fotos de whatsapp, jpegs cortados) tiradas pelo Advogado no Atendimento Inicial (Card no Kanban: Novo Processo).
-*   **Acesso:** Somente a role `operacional` (INSERT) e as `edge-functions` (SELECT, DELETE). Arquivos morrem aqui após a IA processar.
+Como o banco de dados (tabela `documentos`) armazena nativamente o link exato de cada arquivo no campo `storage_path` — e amarra esse arquivo à fase do Kanban — a organização visual para a Gestora ou Advogado é totalmente manipulada no Frontend via banco de dados, sem a necessidade sistêmica de pular arquivos de um Bucket para outro.
 
-### Bucket 2: `dossies-validados` (O Arquivo Oficial Organizado)
-*   **Propósito:** Onde o sistema deposita os PDFs já cortados, rotacionados, tratados pela IA e categorizados. É daqui que a Tela de Auditoria da Gestora puxa o PDF para exibir em Split-Screen.
-*   **Hierarquia Interna Rigorosa:**
-    *   `/cliente_uuid/processo_uuid/01_DADOS_PESSOAIS/` (Ex: RG.pdf, CPF.pdf, Comp_Residencia.pdf)
-    *   `/cliente_uuid/processo_uuid/03_RENDA/` (Ex: CadUnico_2025.pdf)
-    *   `/cliente_uuid/processo_uuid/04_MEDICOS_LAUDOS/` (Ex: Laudo_Ortopedista_Com_CID.pdf)
-    *   `/cliente_uuid/processo_uuid/06_INSS/` (Ex: Print_Exigencia_Tela_INSS.pdf)
-    *   `/cliente_uuid/processo_uuid/90_PECAS_GERADAS/` (Petição DOCX Final)
+### 7.1. O Bucket Único: `documentos_processuais`
+*   **Visão Geral:** Receberá desde as inserções iniciais (fotos do celular do cliente, "sujeira" do balcão) até os PDFs processados finais e Peças Petições.
+*   **A Inteligência é o Banco:** Ao invés da arquitetura depender de hierarquias de pastas complexas (ex: transferir fisicamente do Bucket A para o Bucket B), o Módulo de IA (OCR Vision) apenas lerá a foto original no bucket, atrelará os *Metadados Clínicos* na tabela `documentos`, definirá logicamente o perfil da foto e manterá o `storage_path` centralizado para acesso via viewer.
+*   **Benefício Operacional Direto:** 
+    *   Facilita a vida do desenvolvedor Frontend/Backend (1 conexão central com o Storage).
+    *   A Gestão RLS (Segurança) é global por ID do usuário/escritório em uma única raiz.
+    *   Auditabilidade perfeita mantendo sempre o link direto que foi associado na transação inicial do CRM.
 
 ---
 
