@@ -1,119 +1,161 @@
 import DashboardLayout from "@/components/layout/dashboard-layout"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { FileText, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react"
+import { CheckCircle2, AlertTriangle, ArrowRight, Download, Info } from "lucide-react"
 
 export default function ProcessoAuditPage({ params }: { params: { id: string } }) {
-    // Dados simulados do Processo Mestre
     const processo = {
         id: params.id || "PRC-8921",
-        cliente: "Maria do Carmo Silva",
-        tipo: "BPC Idoso",
-        fase: "Pronto para Petição",
-        tags: ["CID: M54.5", "DII: 10/05/2023", "CadÚnico Válido"],
+        cliente: "MARIA DO CARMO SILVA",
+        tipo: "BPC IDOSO",
+        fase: "AGUARDANDO AUDITORIA",
+        tags: ["CID: M54.5", "DII: 10/05/2023", "CADÚNICO ATIVO"],
     }
 
     return (
         <DashboardLayout>
-            <div className="flex flex-col h-[calc(100vh-8rem)] w-full">
-                {/* Top Bar Analítica */}
-                <div className="flex items-center justify-between mb-4 shrink-0 bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-                    <div>
-                        <div className="flex items-center gap-3 mb-1">
-                            <h1 className="text-2xl font-bold text-slate-900">{processo.cliente}</h1>
-                            <Badge variant="outline" className="font-mono text-slate-500 bg-slate-50">{processo.id}</Badge>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm">
-                            <span className="font-semibold text-purple-700 bg-purple-50 px-2 py-0.5 rounded">{processo.tipo}</span>
-                            <span className="text-slate-400">&bull;</span>
-                            <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded flex items-center gap-1">
-                                <CheckCircle2 className="h-3 w-3" /> {processo.fase}
-                            </span>
+            <div className="flex flex-col h-[calc(100vh-5rem)] w-full bg-[#0A0A0A] overflow-hidden">
+                {/* Global Action Bar */}
+                <div className="flex items-center justify-between px-12 py-4 bg-[#171717] border-b border-[#333333] shrink-0">
+                    <div className="flex items-center gap-6">
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-3">
+                                <h1 className="text-2xl font-black text-white italic truncate max-w-md">{processo.cliente}</h1>
+                                <span className="bg-[#0A0A0A] px-2 py-0.5 rounded text-[10px] font-black text-[#A3A3A3] border border-[#333333] uppercase tracking-tighter">{processo.id}</span>
+                            </div>
+                            <div className="flex items-center gap-3 mt-1">
+                                <span className="text-[10px] font-black text-[#FACC15] bg-[#FACC15]/10 px-2 py-0.5 rounded border border-[#FACC15]/20 uppercase tracking-widest">{processo.tipo}</span>
+                                <Separator orientation="vertical" className="h-3 bg-[#333333]" />
+                                <div className="flex items-center gap-1.5">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-tight">{processo.fase}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                            <AlertCircle className="mr-2 h-4 w-4" /> Registrar Exigência
-                        </Button>
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                            Aprovar Petição <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
+                    <div className="flex items-center gap-4">
+                        <button className="flex items-center gap-2 px-4 py-2 bg-[#1F1F1F] border border-[#333333] rounded text-[10px] font-black uppercase text-[#A3A3A3] tracking-widest hover:text-white transition-colors">
+                            <Download className="h-3.5 w-3.5" />
+                            Baixar Dossiê
+                        </button>
+                        <button className="flex items-center gap-2 px-4 py-2 bg-red-900/10 border border-red-900/40 rounded text-[10px] font-black uppercase text-red-500 tracking-widest hover:bg-red-900/20 transition-all">
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            Registrar Exigência
+                        </button>
+                        <button className="flex items-center gap-2 px-6 py-2 bg-[#FACC15] rounded text-[10px] font-black uppercase text-black tracking-[0.15em] hover:bg-[#EAB308] transition-all shadow-[0_0_15px_rgba(250,204,21,0.2)]">
+                            Aprovar Auditoria
+                            <ArrowRight className="h-3.5 w-3.5" />
+                        </button>
                     </div>
                 </div>
 
-                {/* Audit Split-Screen View */}
-                <div className="flex gap-4 flex-1 min-h-0">
+                {/* Main Split Interface */}
+                <div className="flex flex-1 min-h-0">
 
-                    {/* Lado Esquerdo: Metadados Estruturados (Forms/Informação IA) */}
-                    <div className="w-1/3 flex flex-col gap-4 overflow-y-auto pr-2">
-                        <Card className="shadow-sm border-slate-200">
-                            <CardHeader className="py-4">
-                                <CardTitle className="text-base text-slate-800 flex items-center gap-2">
-                                    <FileText className="h-4 w-4 text-blue-600" /> Resumo do Dossiê
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4 text-sm">
-                                    <div>
-                                        <span className="text-slate-500 block mb-1">Tags Clínicas / IA:</span>
-                                        <div className="flex flex-wrap gap-2">
-                                            {processo.tags.map((t, i) => (
-                                                <Badge key={i} variant="secondary" className="bg-slate-100 text-slate-700 hover:bg-slate-200">{t}</Badge>
-                                            ))}
+                    {/* Left Panel: Structured Data & AI Insights */}
+                    <div className="w-[450px] border-r border-[#333333] bg-[#0F0F0F] overflow-y-auto scrollbar-thin scrollbar-thumb-[#333333]">
+                        <div className="p-10 space-y-10">
+
+                            <section>
+                                <div className="flex items-center gap-2 mb-6 text-[#FACC15]">
+                                    <span className="material-symbols-outlined text-lg">analytics</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Metadados IA (Vision)</h3>
+                                </div>
+                                <div className="grid grid-cols-1 gap-4">
+                                    <div className="bg-[#171717] border border-[#333333] p-4 rounded-lg">
+                                        <span className="text-[9px] font-black text-[#A3A3A3] uppercase tracking-widest block mb-2">Diagnóstico Sugerido</span>
+                                        <p className="text-white font-bold text-sm tracking-tight">CID 10: M54.5 (Lumbago com ciática)</p>
+                                    </div>
+                                    <div className="bg-[#171717] border border-[#333333] p-4 rounded-lg">
+                                        <span className="text-[9px] font-black text-[#A3A3A3] uppercase tracking-widest block mb-2">Confidence Score</span>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-1.5 flex-1 bg-[#1F1F1F] rounded-full overflow-hidden">
+                                                <div className="h-full bg-green-500 w-[94%]" />
+                                            </div>
+                                            <span className="text-xs font-black text-green-500">94%</span>
                                         </div>
                                     </div>
-                                    <Separator />
-                                    <div>
-                                        <span className="text-slate-500 block font-medium mb-2">Checklist Obrigatório (BPC Idoso)</span>
-                                        <ul className="space-y-2">
-                                            <li className="flex items-center gap-2 text-emerald-700"><CheckCircle2 className="h-4 w-4" /> RG legível</li>
-                                            <li className="flex items-center gap-2 text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Comprovante de Endereço</li>
-                                            <li className="flex items-center gap-2 text-emerald-700"><CheckCircle2 className="h-4 w-4" /> Idade comprovada {'>'} 65</li>
-                                            <li className="flex items-center gap-2 text-slate-400 line-through">Laudo Médico (Não exigido BPC Idoso)</li>
-                                        </ul>
-                                    </div>
                                 </div>
-                            </CardContent>
-                        </Card>
+                            </section>
 
-                        <Card className="shadow-sm border-slate-200 flex-1">
-                            <CardHeader className="py-4">
-                                <CardTitle className="text-base text-slate-800">Anotações Internas</CardTitle>
-                            </CardHeader>
-                            <CardContent>
+                            <Separator className="bg-[#333333]" />
+
+                            <section>
+                                <div className="flex items-center gap-2 mb-6 text-white">
+                                    <span className="material-symbols-outlined text-lg">fact_check</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Checklist de Conformidade</h3>
+                                </div>
+                                <div className="space-y-4">
+                                    {[
+                                        { label: "RG/CNH Legível", ok: true },
+                                        { label: "Comprovante de Endereço (90D)", ok: true },
+                                        { label: "CadÚnico Atualizado", ok: true },
+                                        { label: "Idade Crítica (65+)", ok: false, warning: true },
+                                    ].map((step, i) => (
+                                        <div key={i} className={`flex items-center justify-between p-3 rounded-lg border ${step.ok ? 'bg-green-500/5 border-green-500/20 text-green-500' : 'bg-red-500/5 border-red-500/20 text-red-500 underline decoration-red-500/30'}`}>
+                                            <span className="text-[11px] font-bold uppercase tracking-tighter">{step.label}</span>
+                                            {step.ok ? <CheckCircle2 className="h-4 w-4" /> : <Info className="h-4 w-4" />}
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <Separator className="bg-[#333333]" />
+
+                            <section>
+                                <div className="flex items-center gap-2 mb-6 text-[#A3A3A3]">
+                                    <span className="material-symbols-outlined text-lg">sticky_note_2</span>
+                                    <h3 className="text-[10px] font-black uppercase tracking-[0.2em]">Observações do Auditor</h3>
+                                </div>
                                 <textarea
-                                    className="w-full h-32 p-3 text-sm rounded-md border border-slate-200 bg-slate-50 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none resize-none placeholder:text-slate-400"
-                                    placeholder="Deixe um comentário sobre este dossiê..."
+                                    className="w-full h-40 bg-[#171717] border border-[#333333] rounded-lg p-4 text-white text-sm focus:border-[#FACC15] outline-none transition-all placeholder:text-[#333333] font-medium"
+                                    placeholder="INSIRA NOTAS TÉCNICAS AQUI..."
                                 />
-                            </CardContent>
-                        </Card>
+                            </section>
+
+                        </div>
                     </div>
 
-                    {/* Lado Direito: Visualizador de PDF Embutido (Mock) */}
-                    <div className="w-2/3 bg-slate-800 rounded-lg border border-slate-700 overflow-hidden flex flex-col relative shadow-inner">
-                        <div className="h-10 bg-slate-900 border-b border-slate-700 flex items-center px-4 justify-between shrink-0">
-                            <span className="text-slate-300 text-xs font-semibold tracking-wider uppercase">Visualizador de Documentos</span>
-                            <div className="flex gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                                <span className="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
-                                <span className="w-2.5 h-2.5 rounded-full bg-slate-600"></span>
+                    {/* Right Panel: High-Resolution Viewer */}
+                    <div className="flex-1 bg-[#0A0A0A] relative flex flex-col">
+                        <div className="absolute inset-0 overflow-auto bg-[url('https://www.transparenttextures.com/patterns/dark-matter.png')] opacity-10 pointer-events-none" />
+
+                        <div className="h-10 bg-[#1F1F1F] border-b border-[#333333] flex items-center px-6 justify-between shrink-0">
+                            <div className="flex items-center gap-4">
+                                <span className="text-[9px] font-black text-[#A3A3A3] uppercase tracking-[0.25em]">Preview: LAUDO_MEDICO_MARIA.PDF</span>
+                                <div className="flex gap-1">
+                                    <button className="h-5 w-5 rounded bg-[#171717] flex items-center justify-center border border-[#333333] hover:border-[#FACC15] transition-colors">
+                                        <span className="material-symbols-outlined text-[12px] text-white">zoom_in</span>
+                                    </button>
+                                    <button className="h-5 w-5 rounded bg-[#171717] flex items-center justify-center border border-[#333333] hover:border-[#FACC15] transition-colors">
+                                        <span className="material-symbols-outlined text-[12px] text-white">zoom_out</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        {/* Mocked Viewer Pane */}
-                        <div className="flex-1 flex items-center justify-center p-8">
-                            <div className="w-full max-w-lg h-full bg-white rounded shadow-2xl flex flex-col p-8 opacity-90 relative">
-                                <div className="h-8 w-3/4 bg-slate-200 rounded mb-8"></div>
-                                <div className="space-y-3 flex-1">
-                                    <div className="h-4 w-full bg-slate-100 rounded"></div>
-                                    <div className="h-4 w-full bg-slate-100 rounded"></div>
-                                    <div className="h-4 w-5/6 bg-slate-100 rounded"></div>
-                                    <div className="h-4 w-full bg-slate-100 rounded mt-6"></div>
-                                    <div className="h-4 w-4/6 bg-slate-100 rounded"></div>
-                                    <div className="h-32 w-full border-2 border-slate-100 rounded mt-8 flex items-center justify-center text-slate-300 font-bold" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #f8fafc 25%, transparent 25%, transparent 75%, #f8fafc 75%, #f8fafc), repeating-linear-gradient(45deg, #f8fafc 25%, #ffffff 25%, #ffffff 75%, #f8fafc 75%, #f8fafc)', backgroundPosition: '0 0, 10px 10px', backgroundSize: '20px 20px' }}>
-                                        [MOCK PDF PETIÇÃO]
+
+                        {/* Viewer Content (Simulated) */}
+                        <div className="flex-1 p-12 flex justify-center bg-[#050505]">
+                            <div className="w-full max-w-4xl bg-white rounded shadow-[0_30px_60px_-12px_rgba(0,0,0,0.8)] flex flex-col p-16 select-none relative overflow-hidden ring-1 ring-white/10">
+                                <div className="absolute top-0 right-0 p-8">
+                                    <div className="h-20 w-20 border-2 border-[#eee] rounded-full flex items-center justify-center text-[10px] font-black text-[#ccc] rotate-12">SELO DIGITAL</div>
+                                </div>
+
+                                <div className="h-10 w-2/5 bg-slate-100 rounded mb-12" />
+                                <div className="space-y-6">
+                                    <div className="h-4 w-full bg-slate-50 rounded" />
+                                    <div className="h-4 w-full bg-slate-50 rounded" />
+                                    <div className="h-4 w-3/4 bg-slate-50 rounded" />
+                                    <div className="h-4 w-full bg-slate-50 rounded mt-12" />
+                                    <div className="h-4 w-5/6 bg-slate-50 rounded" />
+                                    <div className="h-4 w-4/6 bg-slate-50 rounded" />
+
+                                    <div className="pt-20 space-y-4">
+                                        <Separator className="bg-slate-100" />
+                                        <div className="h-12 w-full flex items-center justify-center">
+                                            <div className="h-8 w-64 bg-slate-50 border-b-2 border-slate-200" />
+                                        </div>
+                                        <p className="text-center text-[9px] font-bold text-slate-300 uppercase tracking-widest">Assinatura Certificada via D&F Vision</p>
                                     </div>
                                 </div>
                             </div>

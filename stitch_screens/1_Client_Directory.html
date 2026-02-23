@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Client Directory - D&amp;F Gestão</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#FACC15", // Unified Light Yellow/Gold
+                        "primary-dark": "#EAB308", // Slightly darker for hover
+                        "background-dark": "#0A0A0A", // Unified Deep Black
+                        "surface-dark": "#171717", // Unified Sidebar/Dark Charcoal
+                        "surface-table": "#1F1F1F", // Dark Gray for tables
+                        "surface-hover": "#262626", // Slightly lighter for hover
+                        "text-muted": "#A3A3A3", // Neutral gray for muted text
+                        "border-subtle": "#333333", // Subtle borders
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "sans-serif"],
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-dark text-white font-sans antialiased overflow-hidden">
+<div class="flex h-screen w-full bg-background-dark">
+<aside class="flex w-72 flex-col border-r border-border-subtle bg-surface-dark transition-all duration-300">
+<div class="flex h-20 items-center gap-3 px-6 border-b border-border-subtle">
+<div class="bg-primary/20 aspect-square h-10 w-10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">gavel</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-white text-lg font-bold leading-tight">D&amp;F Gestão</h1>
+<p class="text-text-muted text-xs font-normal">Advocacia Previdenciária</p>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto px-4 py-6 flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-text-muted hover:bg-surface-hover hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg bg-primary/10 text-primary border border-primary/20" href="#">
+<span class="material-symbols-outlined text-2xl fill-1">group</span>
+<span class="text-sm font-bold">Clientes</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-text-muted hover:bg-surface-hover hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">balance</span>
+<span class="text-sm font-medium">Processos</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-text-muted hover:bg-surface-hover hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">calendar_today</span>
+<span class="text-sm font-medium">Agenda</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-text-muted hover:bg-surface-hover hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">attach_money</span>
+<span class="text-sm font-medium">Financeiro</span>
+</a>
+</nav>
+<div class="p-4 border-t border-border-subtle">
+<a class="flex items-center gap-3 px-3 py-3 rounded-lg text-text-muted hover:bg-surface-hover hover:text-white transition-colors group" href="#">
+<span class="material-symbols-outlined text-2xl group-hover:text-primary transition-colors">settings</span>
+<span class="text-sm font-medium">Configurações</span>
+</a>
+<div class="mt-4 flex items-center gap-3 px-3">
+<div class="h-10 w-10 rounded-full bg-cover bg-center ring-2 ring-primary/30" data-alt="Portrait of a lawyer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD-e5nFL79wd37741Y5HQw0Ca5Wla8BrZHHp54lrgPedQsvnD2miOMCHyLH1FescL7OVCA6tCtEg8wTz5PJHSlY52cwZLEQj1lJhw2gGZ6OnadHvXadBqazRpX22mfQsu533UzolaEaIUDWIJmjfnqMN3gETkUaiUkSTeaAqfbhc4RG1KQiOJB31GuoEhvmjiW-r34umKlKAkawXdJ6oe8iRZ6W3C5T26G61rDE9HBTI6FFPbgC-53R5o5awpSl-exVr2KQnHbu0DI0')"></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-white">Dr. Ricardo</span>
+<span class="text-xs text-text-muted">Sócio Senior</span>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden bg-background-dark relative">
+<header class="flex flex-col gap-4 px-8 pt-8 pb-4">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div>
+<h2 class="text-3xl font-black text-white tracking-tight">Diretório de Clientes</h2>
+<p class="text-text-muted mt-1">Gerenciamento de beneficiários e status dos processos</p>
+</div>
+<button class="flex items-center justify-center gap-2 rounded-lg bg-primary hover:bg-primary-dark transition-colors px-6 py-2.5 text-black font-bold text-sm shadow-[0_0_15px_rgba(250,204,21,0.15)]">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span>Adicionar Cliente</span>
+</button>
+</div>
+<div class="mt-4 flex flex-col md:flex-row gap-4 items-center">
+<div class="relative w-full md:max-w-md group">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-muted group-focus-within:text-primary transition-colors">search</span>
+</div>
+<input class="block w-full pl-10 pr-3 py-2.5 border border-border-subtle rounded-lg leading-5 bg-surface-table text-white placeholder-text-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary sm:text-sm transition-all shadow-sm" placeholder="Buscar por nome, CPF ou número do processo" type="text"/>
+</div>
+<div class="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-table border border-border-subtle rounded-lg text-sm font-medium text-text-muted hover:text-white hover:border-primary/50 transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                            Filtros
+                        </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-table border border-border-subtle rounded-lg text-sm font-medium text-text-muted hover:text-white hover:border-primary/50 transition-colors whitespace-nowrap">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                            Exportar
+                        </button>
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-auto px-8 pb-8">
+<div class="min-w-full inline-block align-middle">
+<div class="border border-border-subtle rounded-xl bg-surface-table overflow-hidden shadow-xl">
+<table class="min-w-full divide-y divide-border-subtle">
+<thead>
+<tr class="bg-surface-hover/30">
+<th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider" scope="col">
+                                        Nome do Cliente
+                                    </th>
+<th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider hidden sm:table-cell" scope="col">
+                                        CPF
+                                    </th>
+<th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider hidden md:table-cell" scope="col">
+                                        Última Atualização
+                                    </th>
+<th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider hidden lg:table-cell" scope="col">
+                                        Benefício Ativo
+                                    </th>
+<th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider" scope="col">
+                                        Status
+                                    </th>
+<th class="relative px-6 py-4" scope="col">
+<span class="sr-only">Ações</span>
+</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-subtle bg-surface-table">
+<tr class="group hover:bg-surface-hover transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<div class="h-10 w-10 rounded-full bg-surface-hover border border-border-subtle flex items-center justify-center text-primary font-bold">
+                                                    CM
+                                                </div>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-white group-hover:text-primary transition-colors">Carlos Mendes</div>
+<div class="text-xs text-text-muted">ID: 9822-A</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted font-mono hidden sm:table-cell">
+                                        123.***.***-89
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted hidden md:table-cell">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            Há 2 dias
+                                        </div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-white hidden lg:table-cell">
+                                        Aposentadoria Idade
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-900/30 text-yellow-500 border border-yellow-700/50">
+                                            Em Análise
+                                        </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded hover:bg-surface-hover" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-hover transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of a woman" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAW8GIPX57HE27Pe_Xtd6swIEHHgERwK0scjhlCRllA2C8y8IrSs9QQW4PgRSTnSzPWVcWt7nNWvlhdN65NZzPkFn_VG4hU8JH9dyd3t6s9qq8pNNFc7NJWCnZdJN340FDO89Se13a-nrObwtwIdjU6D_pZ2UV9Djn6qVjZTk34fnsG4-ZlBLBvUrncpuypfomXAPij_N2_kMxG1LQ9kOMtgKgm2Y0BLtNNmKo0T-RGLkHObeu6GuoGfQ6sDQ3rzUAak8WT-otTDxkk')"></div>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-white group-hover:text-primary transition-colors">Maria Silva</div>
+<div class="text-xs text-text-muted">ID: 4521-B</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted font-mono hidden sm:table-cell">
+                                        456.***.***-12
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted hidden md:table-cell">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            Ontem
+                                        </div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-white hidden lg:table-cell">
+                                        Auxílio Doença
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-900/30 text-green-400 border border-green-700/50">
+                                            Deferido
+                                        </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded hover:bg-surface-hover" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-hover transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<div class="h-10 w-10 rounded-full bg-surface-hover border border-border-subtle flex items-center justify-center text-primary font-bold">
+                                                    JS
+                                                </div>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-white group-hover:text-primary transition-colors">João Souza</div>
+<div class="text-xs text-text-muted">ID: 8831-C</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted font-mono hidden sm:table-cell">
+                                        789.***.***-34
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted hidden md:table-cell">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            Hoje
+                                        </div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-white hidden lg:table-cell">
+                                        Pensão por Morte
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-900/30 text-blue-400 border border-blue-700/50">
+                                            Aguardando Perícia
+                                        </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded hover:bg-surface-hover" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-hover transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<div class="h-10 w-10 rounded-full bg-cover bg-center" data-alt="Portrait of an older woman" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBOQaFMG6wLLx_qXO6m_kYZ6n7QA3CyJgzAGFr9y-1TtnBnGrny9b9nbUpdrA_w0Sq1kshflmRsbCiqCn79JI_hz-T4ldRony9FjTxjGZExGq8MU0ZUn_nTovtMMY-HkjXCndELxZVIAIbNhHMbavpBowCDl839tXtfwfNe1tvmSavwx07MJeL88FN7iRFbEecDYPsdVumvgtyLIJOn8SxrvyqCV9mOev3GyK10KeEtF9KipVopmygfjbrchmzIQ7DAhDWVRn22k2yx')"></div>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-white group-hover:text-primary transition-colors">Ana Pereira</div>
+<div class="text-xs text-text-muted">ID: 1102-D</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted font-mono hidden sm:table-cell">
+                                        321.***.***-56
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted hidden md:table-cell">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            Há 1 semana
+                                        </div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-white hidden lg:table-cell">
+                                        BPC/LOAS
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-900/30 text-red-400 border border-red-700/50">
+                                            Indeferido
+                                        </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded hover:bg-surface-hover" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="group hover:bg-surface-hover transition-colors">
+<td class="px-6 py-4 whitespace-nowrap">
+<div class="flex items-center">
+<div class="flex-shrink-0 h-10 w-10">
+<div class="h-10 w-10 rounded-full bg-surface-hover border border-border-subtle flex items-center justify-center text-primary font-bold">
+                                                    RL
+                                                </div>
+</div>
+<div class="ml-4">
+<div class="text-sm font-medium text-white group-hover:text-primary transition-colors">Roberto Lima</div>
+<div class="text-xs text-text-muted">ID: 5567-E</div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted font-mono hidden sm:table-cell">
+                                        654.***.***-78
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted hidden md:table-cell">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                                            Há 3 dias
+                                        </div>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-sm text-white hidden lg:table-cell">
+                                        Aposentadoria Especial
+                                    </td>
+<td class="px-6 py-4 whitespace-nowrap">
+<span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-900/30 text-purple-400 border border-purple-700/50">
+                                            Em Recurso
+                                        </span>
+</td>
+<td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<div class="flex items-center justify-end gap-3 opacity-60 group-hover:opacity-100 transition-opacity">
+<button class="text-text-muted hover:text-primary transition-colors p-1 rounded hover:bg-surface-hover" title="Editar">
+<span class="material-symbols-outlined text-[20px]">edit</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="px-8 pb-6">
+<div class="flex items-center justify-between border-t border-border-subtle pt-4">
+<div class="flex flex-1 justify-between sm:hidden">
+<a class="relative inline-flex items-center rounded-md border border-border-subtle bg-surface-table px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-hover hover:text-white" href="#">Anterior</a>
+<a class="relative ml-3 inline-flex items-center rounded-md border border-border-subtle bg-surface-table px-4 py-2 text-sm font-medium text-text-muted hover:bg-surface-hover hover:text-white" href="#">Próximo</a>
+</div>
+<div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+<div>
+<p class="text-sm text-text-muted">
+                                Mostrando <span class="font-medium text-white">1</span> até <span class="font-medium text-white">5</span> de <span class="font-medium text-white">42</span> clientes
+                            </p>
+</div>
+<div>
+<nav aria-label="Pagination" class="isolate inline-flex -space-x-px rounded-md shadow-sm">
+<a class="relative inline-flex items-center rounded-l-md px-2 py-2 text-text-muted ring-1 ring-inset ring-border-subtle hover:bg-surface-hover focus:z-20 focus:outline-offset-0" href="#">
+<span class="sr-only">Anterior</span>
+<span class="material-symbols-outlined text-[20px]">chevron_left</span>
+</a>
+<a aria-current="page" class="relative z-10 inline-flex items-center bg-primary px-4 py-2 text-sm font-bold text-black focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary" href="#">1</a>
+<a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-text-muted ring-1 ring-inset ring-border-subtle hover:bg-surface-hover hover:text-white focus:z-20 focus:outline-offset-0" href="#">2</a>
+<a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-text-muted ring-1 ring-inset ring-border-subtle hover:bg-surface-hover hover:text-white focus:z-20 focus:outline-offset-0" href="#">3</a>
+<span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-text-muted ring-1 ring-inset ring-border-subtle focus:outline-offset-0">...</span>
+<a class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-text-muted ring-1 ring-inset ring-border-subtle hover:bg-surface-hover hover:text-white focus:z-20 focus:outline-offset-0" href="#">8</a>
+<a class="relative inline-flex items-center rounded-r-md px-2 py-2 text-text-muted ring-1 ring-inset ring-border-subtle hover:bg-surface-hover focus:z-20 focus:outline-offset-0" href="#">
+<span class="sr-only">Próximo</span>
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
