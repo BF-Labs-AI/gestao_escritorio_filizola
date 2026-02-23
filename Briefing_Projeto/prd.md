@@ -188,15 +188,19 @@ Como o banco de dados (tabela `documentos`) armazena nativamente o link exato de
 
 ## 8. Catálogo de Edge Functions (Os Módulos de Automação / "Robôs")
 
-O "Cérebro" invisível do sistema rodará em Deno Edge Functions no Supabase, orquestrando o Kanban.
+O "Cérebro" invisível do sistema rodará em Deno Edge Functions no Supabase, orquestrando o Kanban e atualizando metadados no banco (já que os arquivos físicos não mudam de lugar no Bucket Único).
 
 1.  **`module-vision-ocr` (Antigo Robô 1):** 
-    *   **Ação:** Disparado logo após o upload no `raw-uploads`. Usa **OpenAI GPT-4o Vision** para classificar qual é aquele documento (É um RG? Um Laudo?), valida a legibilidade (desfocado?), converte a foto .JPG para .PDF e move para o Bucket Oficial `dossies-validados`.
+    *   **Ação:** Disparado via Webhook logo após upload de qualquer imagem/PDF para o `documentos_processuais`. 
+    *   **Lógica:** Usa **OpenAI GPT-4o Vision** para classificar qual é aquele documento (É um RG? Um Laudo?), valida a legibilidade (desfocado?). Se for JPEG/PNG, converte a foto internamente para PDF, salva uma nova versão no Bucket, e **aponta o novo link no `storage_path`** da tabela `documentos`, marcando o UUID com o tipo classificado.
 2.  **`module-clinical-extractor` (Antigo Robô 6):**
-    *   **Ação:** Quando um PDF cai na pasta `04_MEDICOS_LAUDOS`, esta função lê todo o texto médico, busca a string do CID e a DII (Data de Início da Incapacidade) exigida pelo INSS (ex: Auxílio-Doença) e salva isso estruturado na tabela `documentos` no campo `metadados_ia`.
+    *   **Ação:** Disparado como cronjob ou webhook quando o Banco identificar que a documentação atingiu um platô crítico na fila.
+    *   **Lógica:** Para os itens da tabela `documentos` carimbados como `LAUDO`, a função extrai o texto médico. Busca a string do CID e a DII (Data de Início da Incapacidade) exigida (ex: Auxílio-Doença) e salva isso estruturadamente em JSON na coluna `metadados_ia` do banco. **Diferença vital: o arquivo físico não é movido, apenas seu registro ganha inteligência.**
 3.  **`module-checklist-gatekeeper` (Antigo Robô 3/4):**
-    *   **Ação:** Uma função de validação de negócio constante. Ela escuta a tabela de `documentos`. Se o `processo` é BPC LOAS e a função achou na tabela um "CadÚnico < 2 anos" + "RG" + "Laudo com CID", ela permite que o Card mude de "Documentação" para "Documentação Aprovada" no Kanban. Se falta algo, mantém travado.
+    *   **Ação:** Uma função de validação de negócio contínua. Escuta atualizações da tabela `documentos`.
+    *   **Lógica:** Se o card do Processo é "BPC LOAS", ela cruza a array de documentos daquele `cliente_id`. Achou "CadÚnico < 2 anos" + "RG" + "Laudo com CID legível"? Se sim, executa o `UPDATE` no *Status Kanban* para aprovar a fase. Se falta algo, pinta de vermelho e lança uma pendência sistêmica de que o Laudo ou RG está em falta.
 4.  **`module-document-assembler` (Antigo Robô 8/9):**
-    *   **Ação:** Acionado na fase "Pronto para Petição". Usa biblioteca Node (`docx`) para preencher um template padrão de Petição injetando os dados do `cliente` e os resumos de laudos encontrados. Aglutina todos os PDFs vitais (RG + Laudo + Petição) em 1 único arquivo Final para a Gestora aprovar com 1 clique (Ação Humana).
+    *   **Ação:** Botão acionado na interface da Gestora (Aprovação Final) ou quando atingir a Fila Automática de Petição.
+    *   **Lógica:** Puxa o JSON de metadados clínicos do `module-clinical-extractor` e o Cadastro do Cliente. Usa a lib `docx` (Node) para preencher o formulário Petição. Opcionalmente converte e agrupa (via `pdf-lib`) todos os links de PDFs vitais já presentes naquele Bucket Central, e lança este novo super-arquivo dentro do mesmo bucket e banco como `tipo_peca: PACOTE_FINAL`.
 
-*(O Robô 10 de varredura do INSS e Robô 5 de Protocolo rodam fora do modelo serverless do Supabase, como workers de RPA pesados em Node.js/Python).*
+*(Nota Técnica: O monitoramento externo do portal INSS - Robô 10 - continua mapeado para rodar off-edge em instância fixa ou worker externo como render/aws).*
